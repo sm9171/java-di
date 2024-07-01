@@ -1,0 +1,5 @@
+rootProject.name = 'java-di'
+include 'app'
+include 'di'
+include 'mvc'
+include 'study'
