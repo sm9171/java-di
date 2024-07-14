@@ -8,6 +8,15 @@ plugins {
 group 'camp.nextstep'
 version '1.0-SNAPSHOT'
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation 'org.springframework:spring-context:6.1.10'
     implementation 'org.springframework:spring-webmvc:6.1.10'
@@ -35,4 +44,8 @@ allOpen {
     annotation('org.springframework.web.bind.annotation.RestController')
     annotation('org.springframework.web.bind.annotation.Controller')
     annotation('org.springframework.context.annotation.Configuration')
+}
+
+test {
+    useJUnitPlatform()
 }
