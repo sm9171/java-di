@@ -90,7 +90,6 @@ class Dependencies : FreeSpec({
         클래스 A와 B가 순환 참조 상태라면 Spring IoC 컨테이너는 런타임에 예외를 던집니다.
         
         한 가지 해결책은 클래스의 일부 소스 코드를 생성자 대신 setter로 구성하도록 편집하는 것입니다.
-        또는 생성자 주입을 피하고 setter 주입만 사용하는 방법도 있습니다.
         권장되지는 않지만 setter 주입을 사용하여 순환 의존성을 구성할 수 있습니다.
         """ {
             // CircularDependencyConfig 클래스에서 ACircularObject와 BCircularObject가 서로 의존하도록 설정했습니다.
