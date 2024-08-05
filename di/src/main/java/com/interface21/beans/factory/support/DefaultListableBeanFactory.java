@@ -11,8 +11,10 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,23 +29,19 @@ public class DefaultListableBeanFactory implements BeanFactory {
     private final Map<Class<?>, Object> singletonObjects = new HashMap<>();
 
     public DefaultListableBeanFactory(final Reflections reflections) {
-        Set<Class<?>> controller = reflections.getTypesAnnotatedWith(Controller.class);
-        Set<Class<?>> service = reflections.getTypesAnnotatedWith(Service.class);
-        Set<Class<?>> repository = reflections.getTypesAnnotatedWith(Repository.class);
+        List.of(Repository.class, Service.class, Controller.class).forEach(annotation -> {
+            registerBeans(reflections, annotation);
+        });
+    }
 
-        controller.forEach(beanClass -> {
-            final BeanDefinition beanDefinition = new SimpleBeanDefinition(beanClass);
-            beanDefinitionMap.put(beanClass, beanDefinition);
-        });
-        service.forEach(beanClass -> {
-            final BeanDefinition beanDefinition = new SimpleBeanDefinition(beanClass);
-            beanDefinitionMap.put(beanClass, beanDefinition);
-        });
-        repository.forEach(beanClass -> {
+    private void registerBeans(final Reflections reflections, final Class<? extends Annotation> annotation) {
+        Set<Class<?>> beans = reflections.getTypesAnnotatedWith(annotation);
+        beans.forEach(beanClass -> {
             final BeanDefinition beanDefinition = new SimpleBeanDefinition(beanClass);
             beanDefinitionMap.put(beanClass, beanDefinition);
         });
     }
+
     @Override
     public Set<Class<?>> getBeanClasses() {
         return beanDefinitionMap.values().stream()
