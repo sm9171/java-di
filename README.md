@@ -34,3 +34,7 @@
 
 ### 프로토타입 스코프
 <img src="docs/images/prototype.png" alt="prototype">
+
+## 미션
+### 1단계 미션 요구사항
+- [x] `@Autowired` 어노테이션을 사용하여 의존성 주입을 구현한다.
