@@ -40,4 +40,4 @@
 - [x] `@Autowired` 어노테이션을 사용하여 의존성 주입을 구현한다.
 
 ### 2단계 미션 요구사항
-- [ ] AnnotationHandlerMapping이 BeanFactory와 BeanScanner를 활용해 동작하도록 리팩터링한다.
+- [x] AnnotationHandlerMapping이 BeanFactory와 BeanScanner를 활용해 동작하도록 리팩터링한다.
