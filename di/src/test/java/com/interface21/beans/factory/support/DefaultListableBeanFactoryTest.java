@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import samples.JdbcSampleRepository;
+import samples.SampleComponent;
 import samples.SampleController;
 import samples.SampleService;
 
@@ -25,7 +26,7 @@ class DefaultListableBeanFactoryTest {
     @SuppressWarnings("unchecked")
     void setUp() {
         reflections = new Reflections("samples");
-        beanFactory = new DefaultListableBeanFactory(reflections);
+        beanFactory = new DefaultListableBeanFactory("samples");
         beanFactory.initialize();
     }
 
@@ -45,7 +46,7 @@ class DefaultListableBeanFactoryTest {
     void getBeanClassesTest() {
         final Set<Class<?>> beanClasses = beanFactory.getBeanClasses();
 
-        assertThat(beanClasses).containsExactlyInAnyOrder(SampleController.class, SampleService.class, JdbcSampleRepository.class);
+        assertThat(beanClasses).containsExactlyInAnyOrder(SampleComponent.class, SampleController.class, SampleService.class, JdbcSampleRepository.class);
     }
 
     @Test
