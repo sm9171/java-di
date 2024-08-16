@@ -4,11 +4,9 @@ import com.interface21.beans.BeanInstantiationException;
 import com.interface21.beans.factory.BeanFactory;
 import com.interface21.beans.factory.config.BeanDefinition;
 import com.interface21.beans.factory.config.SimpleBeanDefinition;
-import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,14 +23,6 @@ public class DefaultListableBeanFactory implements BeanFactory {
 
     public DefaultListableBeanFactory(final String... basePackages) {
         this.basePackages = basePackages;
-    }
-
-    private void registerBeans(final Reflections reflections, final Class<? extends Annotation> annotation) {
-        Set<Class<?>> beans = reflections.getTypesAnnotatedWith(annotation);
-        beans.forEach(beanClass -> {
-            final BeanDefinition beanDefinition = new SimpleBeanDefinition(beanClass);
-            beanDefinitionMap.put(beanClass, beanDefinition);
-        });
     }
 
     @Override
