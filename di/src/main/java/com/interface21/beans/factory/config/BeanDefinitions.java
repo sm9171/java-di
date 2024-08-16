@@ -1,6 +1,8 @@
 package com.interface21.beans.factory.config;
 
-import java.lang.reflect.Constructor;
+import com.interface21.beans.BeanInstantiationException;
+import com.interface21.beans.factory.support.BeanFactoryUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,12 +33,25 @@ public class BeanDefinitions {
                 .collect(Collectors.toSet());
     }
 
-    public Constructor<?> getConstructor(final Class<?> concreteClass) {
-        return beanDefinitionMap.get(concreteClass).getConstructor();
+    private void registerBeanDefinition(Class<?> clazz) {
+        final BeanDefinition beanDefinition = SimpleBeanDefinition.from(clazz);
+        beanDefinitionMap.put(clazz, beanDefinition);
     }
 
-    private void registerBeanDefinition(Class<?> clazz) {
-        final BeanDefinition beanDefinition = new SimpleBeanDefinition(clazz);
-        beanDefinitionMap.put(clazz, beanDefinition);
+    public BeanDefinition getBeanDefinition(Class<?> beanClass) {
+        final BeanDefinition beanDefinition = beanDefinitionMap.get(beanClass);
+        if (beanDefinition != null) {
+            return beanDefinition;
+        }
+
+        final Class<?> concreteClass = BeanFactoryUtils.findConcreteClass(beanClass, getBeanClasses())
+                .orElseThrow(() -> new BeanInstantiationException(beanClass, "Could not autowire. No concrete class found for %s.".formatted(beanClass.getName())));
+
+        final BeanDefinition concreteBeanDefinition = beanDefinitionMap.get(concreteClass);
+        if (concreteBeanDefinition == null) {
+            throw new BeanInstantiationException(beanClass, "cannot find bean for " + beanClass.getName());
+        }
+
+        return concreteBeanDefinition;
     }
 }
