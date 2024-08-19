@@ -10,4 +10,8 @@ public interface BeanDefinition {
     String getBeanClassName();
 
     Object createBean(final Function<Class<?>, Object> beanSupplier) throws InvocationTargetException, IllegalAccessException, InstantiationException;
+
+    default boolean hasSameName(final BeanDefinition beanDefinition) {
+        return getBeanClassName().equals(beanDefinition.getBeanClassName());
+    }
 }

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.Set;
 
 public class DefaultListableBeanFactory implements BeanFactory {
@@ -16,12 +17,12 @@ public class DefaultListableBeanFactory implements BeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultListableBeanFactory.class);
     private final BeanDefinitions beanDefinitions;
     private final SingletonRegistry singletonRegistry;
-    private final String[] basePackages;
+    private final Set<Class<?>> tempBeansInCreation;
 
-    public DefaultListableBeanFactory(final String... basePackages) {
-        this.basePackages = basePackages;
-        this.beanDefinitions = new BeanDefinitions();
+    public DefaultListableBeanFactory(BeanDefinitions beanDefinitions) {
+        this.beanDefinitions = beanDefinitions;
         this.singletonRegistry = new SingletonRegistry();
+        this.tempBeansInCreation = new HashSet<>();
     }
 
     @Override
@@ -35,16 +36,20 @@ public class DefaultListableBeanFactory implements BeanFactory {
     }
 
     public void initialize() {
-        log.info("Initializing beans");
-        BeanScanner beanScanner = new BeanScanner(basePackages);
-        Set<Class<?>> beanClasses = beanScanner.scan();
-        beanDefinitions.init(beanClasses);
         getBeanClasses().forEach(this::initBean);
     }
 
     private Object initBean(final Class<?> beanClass) {
+        if (singletonRegistry.isContainsKey(beanClass)) {
+            return singletonRegistry.getSingleton(beanClass);
+        }
+
+        tempBeansInCreation.add(beanClass);
+
         final Object createdBean = createBean(beanDefinitions.getBeanDefinition(beanClass));
         singletonRegistry.put(beanClass, createdBean);
+
+        tempBeansInCreation.remove(beanClass);
         return createdBean;
     }
 
@@ -65,8 +70,8 @@ public class DefaultListableBeanFactory implements BeanFactory {
 
     @Override
     public void clear() {
-        log.info("Clearing beans");
         beanDefinitions.clear();
         singletonRegistry.clear();
+        tempBeansInCreation.clear();
     }
 }

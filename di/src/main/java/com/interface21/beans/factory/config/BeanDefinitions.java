@@ -3,28 +3,34 @@ package com.interface21.beans.factory.config;
 import com.interface21.beans.BeanInstantiationException;
 import com.interface21.beans.factory.support.BeanFactoryUtils;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BeanDefinitions {
     private final Map<Class<?>, BeanDefinition> beanDefinitionMap;
 
-    public BeanDefinitions(Map<Class<?>, BeanDefinition> beanDefinitionMap) {
-        this.beanDefinitionMap = beanDefinitionMap;
-    }
-
     public BeanDefinitions() {
-        this(new HashMap<>());
+        this(new HashSet<>());
     }
 
-    public void init(final Set<Class<?>> beanClasses) {
-        beanClasses.forEach(this::registerBeanDefinition);
+    public BeanDefinitions(final Set<Class<?>> beanClasses) {
+        beanDefinitionMap = beanClasses.stream()
+                .map(SimpleBeanDefinition::from)
+                .collect(Collectors.toMap(
+                        SimpleBeanDefinition::getType,
+                        Function.identity()
+                ));
     }
 
     public void clear() {
         beanDefinitionMap.clear();
+    }
+
+    public Map<Class<?>, BeanDefinition> getBeanDefinitionMap() {
+        return beanDefinitionMap;
     }
 
     public Set<Class<?>> getBeanClasses() {
@@ -33,9 +39,11 @@ public class BeanDefinitions {
                 .collect(Collectors.toSet());
     }
 
-    private void registerBeanDefinition(Class<?> clazz) {
-        final BeanDefinition beanDefinition = SimpleBeanDefinition.from(clazz);
-        beanDefinitionMap.put(clazz, beanDefinition);
+    public void registerBeanDefinition(final Class<?> clazz, final BeanDefinition beanDefinition) {
+        if (beanDefinitionMap.values().stream().anyMatch(definition -> definition.hasSameName(beanDefinition))) {
+            throw new IllegalArgumentException("bean %s already exists for %s".formatted(beanDefinition.getBeanClassName(), clazz.getName()));
+        }
+        this.beanDefinitionMap.put(clazz, beanDefinition);
     }
 
     public BeanDefinition getBeanDefinition(Class<?> beanClass) {
@@ -53,5 +61,12 @@ public class BeanDefinitions {
         }
 
         return concreteBeanDefinition;
+    }
+
+    public void mergeBeanDefinitions(final BeanDefinitions beanDefinitions) {
+        final Map<Class<?>, BeanDefinition> beanDefinitionMap = beanDefinitions.getBeanDefinitionMap();
+        for (final BeanDefinition beanDefinition : beanDefinitionMap.values()) {
+            registerBeanDefinition(beanDefinition.getType(), beanDefinition);
+        }
     }
 }
