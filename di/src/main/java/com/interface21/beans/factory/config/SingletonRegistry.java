@@ -1,6 +1,7 @@
 package com.interface21.beans.factory.config;
 
-import java.lang.reflect.Constructor;
+import com.interface21.beans.NoSuchBeanDefinitionException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,12 @@ public class SingletonRegistry {
     }
 
     public Object getSingleton(Class<?> clazz) {
-        return singletonObjects.get(clazz);
+        return singletonObjects.entrySet()
+                .stream()
+                .filter(entry -> clazz.isAssignableFrom(entry.getKey()))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow(() -> new NoSuchBeanDefinitionException(clazz));
     }
 
     public void clear() {
