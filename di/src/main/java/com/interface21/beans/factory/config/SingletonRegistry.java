@@ -8,10 +8,6 @@ import java.util.Map;
 public class SingletonRegistry {
     private final Map<Class<?>, Object> singletonObjects;
 
-    public SingletonRegistry(Map<Class<?>, Object> singletonObjects) {
-        this.singletonObjects = singletonObjects;
-    }
-
     public SingletonRegistry() {
         this.singletonObjects = new HashMap<>();
     }
