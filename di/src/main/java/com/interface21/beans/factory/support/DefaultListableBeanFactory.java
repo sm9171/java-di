@@ -17,12 +17,10 @@ public class DefaultListableBeanFactory implements BeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultListableBeanFactory.class);
     private final BeanDefinitions beanDefinitions;
     private final SingletonRegistry singletonRegistry;
-    private final Set<Class<?>> tempBeansInCreation;
 
     public DefaultListableBeanFactory(BeanDefinitions beanDefinitions) {
         this.beanDefinitions = beanDefinitions;
         this.singletonRegistry = new SingletonRegistry();
-        this.tempBeansInCreation = new HashSet<>();
     }
 
     @Override
@@ -44,12 +42,10 @@ public class DefaultListableBeanFactory implements BeanFactory {
             return singletonRegistry.getSingleton(beanClass);
         }
 
-        tempBeansInCreation.add(beanClass);
 
         final Object createdBean = createBean(beanDefinitions.getBeanDefinition(beanClass));
         singletonRegistry.put(beanClass, createdBean);
 
-        tempBeansInCreation.remove(beanClass);
         return createdBean;
     }
 
@@ -72,6 +68,5 @@ public class DefaultListableBeanFactory implements BeanFactory {
     public void clear() {
         beanDefinitions.clear();
         singletonRegistry.clear();
-        tempBeansInCreation.clear();
     }
 }
