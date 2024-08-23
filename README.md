@@ -48,3 +48,8 @@
     - 각 메소드에서 생성하는 인스턴스가 `BeanFactory`에 빈으로 등록하라는 설정은 `@Bean`으로 한다.
     - `BeanScanner`에서 사용할 기본 패키지에 대한 설정을 하드코딩했는데 `@ComponentScan`으로 패키지 경로를 설정할 수 있도록 지원한다
     - `@Configuration` 설정 파일을 통해 등록한 빈과 `BeanScanner`를 통해 등록한 빈 간에도 DI가 가능해야 한다.
+
+### 4단계 미션 요구사항
+- [ ] 설정 파일을 읽어 Bean 등록 기능 추가
+- [ ] 설정 파일을 통해 등록한 Bean과 ClasspathBeanScanner를 통해 추가한 Bean 통합
+- [ ] ConfigurationBeanScanner와 ClasspathBeanScanner을 통합하는 클래스 추가
